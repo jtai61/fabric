@@ -1,0 +1,49 @@
+{
+    "name": "bidding-network-${ORG}",
+    "version": "1.0.0",
+    "client": {
+        "organization": "${ORG}",
+        "connection": {
+            "timeout": {
+                "peer": {
+                    "endorser": "300"
+                }
+            }
+        }
+    },
+    "organizations": {
+        "${ORG}": {
+            "mspid": "${ORG}MSP",
+            "peers": [
+                "anchorpeer.${ORGI}.edu.tw"
+            ],
+            "certificateAuthorities": [
+                "ca.${ORGI}.edu.tw"
+            ]
+        }
+    },
+    "peers": {
+        "anchorpeer.${ORGI}.edu.tw": {
+            "url": "grpcs://anchorpeer.${ORGI}.edu.tw:${P0PORT}",
+            "tlsCACerts": {
+                "pem": "${PEERPEM}"
+            },
+            "grpcOptions": {
+                "ssl-target-name-override": "anchorpeer.${ORGI}.edu.tw",
+                "hostnameOverride": "anchorpeer.${ORGI}.edu.tw"
+            }
+        }
+    },
+    "certificateAuthorities": {
+        "ca.${ORGI}.edu.tw": {
+            "url": "https://ca.${ORGI}.edu.tw:${CAPORT}",
+            "caName": "ca-${ORGI}",
+            "tlsCACerts": {
+                "pem": ["${CAPEM}"]
+            },
+            "httpOptions": {
+                "verify": false
+            }
+        }
+    }
+}

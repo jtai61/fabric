@@ -1,0 +1,151 @@
+# Copyright IBM Corp. All Rights Reserved.
+#
+# SPDX-License-Identifier: Apache-2.0
+#
+
+version: '2'
+
+volumes:
+  endorser.tc.edu.tw:
+  peer0.tc.edu.tw:
+  peer1.tc.edu.tw:
+
+networks:
+  overlay-network:
+    name: food-network
+
+services:
+
+  endorser.tc.edu.tw:
+    container_name: endorser.tc.edu.tw
+    image: hyperledger/fabric-peer:latest
+    environment:
+      #Generic peer variables
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=food-network
+      # - FABRIC_LOGGING_SPEC=INFO
+      - FABRIC_LOGGING_SPEC=DEBUG
+      - CORE_PEER_TLS_ENABLED=true
+      - CORE_PEER_PROFILE_ENABLED=true
+      - CORE_PEER_TLS_CERT_FILE=/etc/hyperledger/fabric/tls/server.crt
+      - CORE_PEER_TLS_KEY_FILE=/etc/hyperledger/fabric/tls/server.key
+      - CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/fabric/tls/ca.crt
+      # Peer specific variabes
+      - CORE_PEER_ID=endorser.tc.edu.tw
+      - CORE_PEER_ADDRESS=endorser.tc.edu.tw:9051
+      - CORE_PEER_LISTENADDRESS=0.0.0.0:9051
+      - CORE_PEER_CHAINCODEADDRESS=endorser.tc.edu.tw:9052
+      - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:9052
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=endorser.tc.edu.tw:9051
+      - CORE_PEER_GOSSIP_BOOTSTRAP=endorser.tc.edu.tw:9051
+      - CORE_PEER_LOCALMSPID=TcMSP
+      - CORE_OPERATIONS_LISTENADDRESS=0.0.0.0:19051
+    volumes:
+        - /var/run/docker.sock:/host/var/run/docker.sock
+        - ../../config/crypto-config/peerOrganizations/tc.edu.tw/peers/endorser.tc.edu.tw/msp:/etc/hyperledger/fabric/msp
+        - ../../config/crypto-config/peerOrganizations/tc.edu.tw/peers/endorser.tc.edu.tw/tls:/etc/hyperledger/fabric/tls
+        - endorser.tc.edu.tw:/var/hyperledger/production
+    working_dir: /opt/gopath/src/github.com/hyperledger/fabric/peer
+    command: peer node start
+    ports:
+      - 9051:9051
+      - 19051:19051
+    networks:
+      - overlay-network
+
+  peer0.tc.edu.tw:
+    container_name: peer0.tc.edu.tw
+    image: hyperledger/fabric-peer:latest
+    environment:
+      #Generic peer variables
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=food-network
+      # - FABRIC_LOGGING_SPEC=INFO
+      - FABRIC_LOGGING_SPEC=DEBUG
+      - CORE_PEER_TLS_ENABLED=true
+      - CORE_PEER_PROFILE_ENABLED=true
+      - CORE_PEER_TLS_CERT_FILE=/etc/hyperledger/fabric/tls/server.crt
+      - CORE_PEER_TLS_KEY_FILE=/etc/hyperledger/fabric/tls/server.key
+      - CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/fabric/tls/ca.crt
+      # Peer specific variabes
+      - CORE_PEER_ID=peer0.tc.edu.tw
+      - CORE_PEER_ADDRESS=peer0.tc.edu.tw:3051
+      - CORE_PEER_LISTENADDRESS=0.0.0.0:3051
+      - CORE_PEER_CHAINCODEADDRESS=peer0.tc.edu.tw:3052
+      - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:3052
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.tc.edu.tw:3051
+      - CORE_PEER_GOSSIP_BOOTSTRAP=peer0.tc.edu.tw:3051
+      - CORE_PEER_LOCALMSPID=TcMSP
+      - CORE_OPERATIONS_LISTENADDRESS=0.0.0.0:13051
+    volumes:
+        - /var/run/docker.sock:/host/var/run/docker.sock
+        - ../../config/crypto-config/peerOrganizations/tc.edu.tw/peers/peer0.tc.edu.tw/msp:/etc/hyperledger/fabric/msp
+        - ../../config/crypto-config/peerOrganizations/tc.edu.tw/peers/peer0.tc.edu.tw/tls:/etc/hyperledger/fabric/tls
+        - peer0.tc.edu.tw:/var/hyperledger/production
+    working_dir: /opt/gopath/src/github.com/hyperledger/fabric/peer
+    command: peer node start
+    ports:
+      - 3051:3051
+      - 13051:13051
+    networks:
+      - overlay-network
+
+  peer1.tc.edu.tw:
+    container_name: peer1.tc.edu.tw
+    image: hyperledger/fabric-peer:latest
+    environment:
+      #Generic peer variables
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=food-network
+      # - FABRIC_LOGGING_SPEC=INFO
+      - FABRIC_LOGGING_SPEC=DEBUG
+      - CORE_PEER_TLS_ENABLED=true
+      - CORE_PEER_PROFILE_ENABLED=true
+      - CORE_PEER_TLS_CERT_FILE=/etc/hyperledger/fabric/tls/server.crt
+      - CORE_PEER_TLS_KEY_FILE=/etc/hyperledger/fabric/tls/server.key
+      - CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/fabric/tls/ca.crt
+      # Peer specific variabes
+      - CORE_PEER_ID=peer1.tc.edu.tw
+      - CORE_PEER_ADDRESS=peer1.tc.edu.tw:4051
+      - CORE_PEER_LISTENADDRESS=0.0.0.0:4051
+      - CORE_PEER_CHAINCODEADDRESS=peer1.tc.edu.tw:4052
+      - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:4052
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer1.tc.edu.tw:4051
+      - CORE_PEER_GOSSIP_BOOTSTRAP=peer1.tc.edu.tw:4051
+      - CORE_PEER_LOCALMSPID=TcMSP
+      - CORE_OPERATIONS_LISTENADDRESS=0.0.0.0:14051
+    volumes:
+        - /var/run/docker.sock:/host/var/run/docker.sock
+        - ../../config/crypto-config/peerOrganizations/tc.edu.tw/peers/peer1.tc.edu.tw/msp:/etc/hyperledger/fabric/msp
+        - ../../config/crypto-config/peerOrganizations/tc.edu.tw/peers/peer1.tc.edu.tw/tls:/etc/hyperledger/fabric/tls
+        - peer1.tc.edu.tw:/var/hyperledger/production
+    working_dir: /opt/gopath/src/github.com/hyperledger/fabric/peer
+    command: peer node start
+    ports:
+      - 4051:4051
+      - 14051:14051
+    networks:
+      - overlay-network
+
+  cli:
+    container_name: cli
+    image: hyperledger/fabric-tools:latest
+    tty: true
+    stdin_open: true
+    environment:
+      - GOPATH=/opt/gopath
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      - FABRIC_LOGGING_SPEC=INFO
+      #- FABRIC_LOGGING_SPEC=DEBUG
+    working_dir: /opt/gopath/src/github.com/hyperledger/fabric/peer
+    command: /bin/bash
+    volumes:
+        - /var/run/:/host/var/run/
+        - ../../tc:/opt/gopath/src/github.com/hyperledger/fabric/peer/organizations
+        - ../../scripts:/opt/gopath/src/github.com/hyperledger/fabric/peer/scripts/
+    depends_on:
+      - endorser.tc.edu.tw
+      - peer0.tc.edu.tw
+      - peer1.tc.edu.tw
+    networks:
+      - overlay-network

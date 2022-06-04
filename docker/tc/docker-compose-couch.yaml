@@ -1,0 +1,72 @@
+# Copyright IBM Corp. All Rights Reserved.
+#
+# SPDX-License-Identifier: Apache-2.0
+#
+
+version: '2'
+
+networks:
+  overlay-network:
+    name: food-network
+
+services:
+
+  endorser-couchdb.tc.edu.tw:
+    container_name: endorser-couchdb.tc.edu.tw
+    image: couchdb:3.1.1
+    environment:
+      - COUCHDB_USER=admin
+      - COUCHDB_PASSWORD=adminpw
+    ports:
+      - "7984:5984"
+    networks:
+      - overlay-network
+
+  endorser.tc.edu.tw:
+    environment:
+      - CORE_LEDGER_STATE_STATEDATABASE=CouchDB
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=endorser-couchdb.tc.edu.tw:5984
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_USERNAME=admin
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_PASSWORD=adminpw
+    depends_on:
+      - endorser-couchdb.tc.edu.tw
+
+  peer0-couchdb.tc.edu.tw:
+    container_name: peer0-couchdb.tc.edu.tw
+    image: couchdb:3.1.1
+    environment:
+      - COUCHDB_USER=admin
+      - COUCHDB_PASSWORD=adminpw
+    ports:
+      - "3984:5984"
+    networks:
+      - overlay-network
+
+  peer0.tc.edu.tw:
+    environment:
+      - CORE_LEDGER_STATE_STATEDATABASE=CouchDB
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=peer0-couchdb.tc.edu.tw:5984
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_USERNAME=admin
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_PASSWORD=adminpw
+    depends_on:
+      - peer0-couchdb.tc.edu.tw
+
+  peer1-couchdb.tc.edu.tw:
+    container_name: peer1-couchdb.tc.edu.tw
+    image: couchdb:3.1.1
+    environment:
+      - COUCHDB_USER=admin
+      - COUCHDB_PASSWORD=adminpw
+    ports:
+      - "4984:5984"
+    networks:
+      - overlay-network
+
+  peer1.tc.edu.tw:
+    environment:
+      - CORE_LEDGER_STATE_STATEDATABASE=CouchDB
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=peer1-couchdb.tc.edu.tw:5984
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_USERNAME=admin
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_PASSWORD=adminpw
+    depends_on:
+      - peer1-couchdb.tc.edu.tw

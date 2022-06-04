@@ -1,0 +1,35 @@
+---
+name: bidding-network-${ORG}
+version: 1.0.0
+client:
+  organization: ${ORG}
+  connection:
+    timeout:
+      peer:
+        endorser: '300'
+organizations:
+  ${ORG}:
+    mspid: ${ORG}MSP
+    peers:
+    - endorser.${ORGI}.edu.tw
+    certificateAuthorities:
+    - ca.${ORGI}.edu.tw
+peers:
+  endorser.${ORGI}.edu.tw:
+    url: grpcs://endorser.${ORGI}.edu.tw:${P0PORT}
+    tlsCACerts:
+      pem: |
+          ${PEERPEM}
+    grpcOptions:
+      ssl-target-name-override: endorser.${ORGI}.edu.tw
+      hostnameOverride: endorser.${ORGI}.edu.tw
+certificateAuthorities:
+  ca.${ORGI}.edu.tw:
+    url: https://ca.${ORGI}.edu.tw:${CAPORT}
+    caName: ca-${ORGI}
+    tlsCACerts:
+      pem: 
+        - |
+          ${CAPEM}
+    httpOptions:
+      verify: false
