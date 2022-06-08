@@ -2,7 +2,7 @@
 
 source scripts/utils.sh
 
-CHANNEL_NAME=${1:-"bidding-channel"}
+CHANNEL_NAME=${1:-"channel"}
 CC_NAME=${2}
 CC_SRC_PATH=${3}
 CC_SRC_LANGUAGE=${4}
@@ -29,7 +29,7 @@ println "- DELAY: ${C_GREEN}${DELAY}${C_RESET}"
 println "- MAX_RETRY: ${C_GREEN}${MAX_RETRY}${C_RESET}"
 println "- VERBOSE: ${C_GREEN}${VERBOSE}${C_RESET}"
 
-FABRIC_CFG_PATH=$PWD/../config/
+FABRIC_CFG_PATH=${PWD}/config
 
 #User has not provided a name
 if [ -z "$CC_NAME" ] || [ "$CC_NAME" = "NA" ]; then
@@ -127,7 +127,7 @@ approveForMyOrg() {
   PEER=$2
   setGlobals $ORG $PEER
   set -x
-  peer lifecycle chaincode approveformyorg -o localhost:7050 --ordererTLSHostnameOverride orderer0.edu.tw --tls --cafile $ORDERER_CA --channelID $CHANNEL_NAME --name ${CC_NAME} --version ${CC_VERSION} --package-id ${PACKAGE_ID} --sequence ${CC_SEQUENCE} ${INIT_REQUIRED} ${CC_END_POLICY} ${CC_COLL_CONFIG} >&log.txt
+  peer lifecycle chaincode approveformyorg -o orderer0.edu.tw:7050 --ordererTLSHostnameOverride orderer0.edu.tw --tls --cafile $ORDERER_CA --channelID $CHANNEL_NAME --name ${CC_NAME} --version ${CC_VERSION} --package-id ${PACKAGE_ID} --sequence ${CC_SEQUENCE} ${INIT_REQUIRED} ${CC_END_POLICY} ${CC_COLL_CONFIG} >&log.txt
   res=$?
   { set +x; } 2>/dev/null
   cat log.txt
@@ -180,7 +180,7 @@ commitChaincodeDefinition() {
   # peer (if join was successful), let's supply it directly as we know
   # it using the "-o" option
   set -x
-  peer lifecycle chaincode commit -o localhost:7050 --ordererTLSHostnameOverride orderer0.edu.tw --tls --cafile $ORDERER_CA --channelID $CHANNEL_NAME --name ${CC_NAME} $PEER_CONN_PARMS --version ${CC_VERSION} --sequence ${CC_SEQUENCE} ${INIT_REQUIRED} ${CC_END_POLICY} ${CC_COLL_CONFIG} >&log.txt
+  peer lifecycle chaincode commit -o orderer0.edu.tw:7050 --ordererTLSHostnameOverride orderer0.edu.tw --tls --cafile $ORDERER_CA --channelID $CHANNEL_NAME --name ${CC_NAME} $PEER_CONN_PARMS --version ${CC_VERSION} --sequence ${CC_SEQUENCE} ${INIT_REQUIRED} ${CC_END_POLICY} ${CC_COLL_CONFIG} >&log.txt
   res=$?
   { set +x; } 2>/dev/null
   cat log.txt
@@ -231,7 +231,7 @@ chaincodeInvokeInit() {
   set -x
   fcn_call='{"function":"'${CC_INIT_FCN}'","Args":[]}'
   infoln "invoke fcn call:${fcn_call}"
-  peer chaincode invoke -o localhost:7050 --ordererTLSHostnameOverride orderer0.edu.tw --tls --cafile $ORDERER_CA -C $CHANNEL_NAME -n ${CC_NAME} $PEER_CONN_PARMS --isInit -c ${fcn_call} >&log.txt
+  peer chaincode invoke -o orderer0.edu.tw:7050 --ordererTLSHostnameOverride orderer0.edu.tw --tls --cafile $ORDERER_CA -C $CHANNEL_NAME -n ${CC_NAME} $PEER_CONN_PARMS --isInit -c ${fcn_call} >&log.txt
   res=$?
   { set +x; } 2>/dev/null
   cat log.txt
@@ -265,71 +265,56 @@ chaincodeQuery() {
   fi
 }
 
-## package the chaincode
+# package the chaincode
 packageChaincode
 
-## Install chaincode
-infoln "Installing chaincode on anchorpeer.tn..."
-installChaincode "tn" "anchorpeer"
-# infoln "Installing chaincode on peer0.tn..."
-# installChaincode "tn" "peer0"
-# infoln "Installing chaincode on peer1.tn..."
-# installChaincode "tn" "peer1"
-infoln "Install chaincode on anchorpeer.tc..."
-installChaincode "tc" "anchorpeer"
-# infoln "Installing chaincode on peer0.tc..."
-# installChaincode "tc" "peer0"
-# infoln "Installing chaincode on peer1.tc..."
-# installChaincode "tc" "peer1"
+# Install chaincode
+infoln "Installing chaincode on endorser.tn..."
+installChaincode "tn" "endorser"
+infoln "Install chaincode on endorser.tc..."
+installChaincode "tc" "endorser"
 
-## query whether the chaincode is installed
-queryInstalled "tn" "anchorpeer"
-# queryInstalled "tn" "peer0"
-# queryInstalled "tn" "peer1"
-queryInstalled "tc" "anchorpeer"
-# queryInstalled "tc" "peer0"
-# queryInstalled "tc" "peer1"
+# query whether the chaincode is installed
+queryInstalled "tn" "endorser"
+queryInstalled "tc" "endorser"
 
+# approve the definition for TnOrg
+approveForMyOrg "tn" "endorser"
 
-## approve the definition for TnOrg
-approveForMyOrg "tn" "anchorpeer"
-
-
-## check whether the chaincode definition is ready to be committed
-## expect org1 to have approved and org2 not to
-checkCommitReadiness "tn" "anchorpeer" "\"TnMSP\": true" "\"TcMSP\": false"
+# check whether the chaincode definition is ready to be committed
+# expect org1 to have approved and org2 not to
+checkCommitReadiness "tn" "endorser" "\"TnMSP\": true" "\"TcMSP\": false"
 checkCommitReadiness "tn" "peer0" "\"TnMSP\": true" "\"TcMSP\": false"
 checkCommitReadiness "tn" "peer1" "\"TnMSP\": true" "\"TcMSP\": false"
-checkCommitReadiness "tc" "anchorpeer" "\"TnMSP\": true" "\"TcMSP\": false"
+checkCommitReadiness "tc" "endorser" "\"TnMSP\": true" "\"TcMSP\": false"
 checkCommitReadiness "tc" "peer0" "\"TnMSP\": true" "\"TcMSP\": false"
 checkCommitReadiness "tc" "peer1" "\"TnMSP\": true" "\"TcMSP\": false"
 
-## now approve also for TcOrg
-approveForMyOrg "tc" "anchorpeer"
+# now approve also for TcOrg
+approveForMyOrg "tc" "endorser"
 
-
-## check whether the chaincode definition is ready to be committed
-## expect them both to have approved
-checkCommitReadiness "tn" "anchorpeer" "\"TnMSP\": true" "\"TcMSP\": true"
+# check whether the chaincode definition is ready to be committed
+# expect them both to have approved
+checkCommitReadiness "tn" "endorser" "\"TnMSP\": true" "\"TcMSP\": true"
 checkCommitReadiness "tn" "peer0" "\"TnMSP\": true" "\"TcMSP\": true"
 checkCommitReadiness "tn" "peer1" "\"TnMSP\": true" "\"TcMSP\": true"
-checkCommitReadiness "tc" "anchorpeer" "\"TnMSP\": true" "\"TcMSP\": true"
+checkCommitReadiness "tc" "endorser" "\"TnMSP\": true" "\"TcMSP\": true"
 checkCommitReadiness "tc" "peer0" "\"TnMSP\": true" "\"TcMSP\": true"
 checkCommitReadiness "tc" "peer1" "\"TnMSP\": true" "\"TcMSP\": true"
 
-## now that we know for sure both orgs have approved, commit the definition
+# now that we know for sure both orgs have approved, commit the definition
 commitChaincodeDefinition "tn" "tc"
 
-## query on both orgs to see that the definition committed successfully
-queryCommitted "tn" "anchorpeer"
+# query on both orgs to see that the definition committed successfully
+queryCommitted "tn" "endorser"
 queryCommitted "tn" "peer0"
 queryCommitted "tn" "peer1"
-queryCommitted "tc" "anchorpeer"
+queryCommitted "tc" "endorser"
 queryCommitted "tc" "peer0"
 queryCommitted "tc" "peer1"
 
-## Invoke the chaincode - this does require that the chaincode have the 'initLedger'
-## method defined
+# Invoke the chaincode - this does require that the chaincode have the 'initLedger'
+# method defined
 if [ "$CC_INIT_FCN" = "NA" ]; then
   infoln "Chaincode initialization is not required"
 else

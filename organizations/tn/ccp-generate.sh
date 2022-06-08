@@ -35,5 +35,5 @@ CAPORT=7054
 PEERPEM=config/crypto-config/peerOrganizations/tn.edu.tw/tlsca/tlsca.tn.edu.tw-cert.pem
 CAPEM=config/crypto-config/peerOrganizations/tn.edu.tw/ca/ca.tn.edu.tw-cert.pem
 
-echo "$(json_ccp $ORG $P0PORT $CAPORT $PEERPEM $CAPEM $ORGI)" > config/crypto-config/peerOrganizations/tn.edu.tw/connection-tn.json
-echo "$(yaml_ccp $ORG $P0PORT $CAPORT $PEERPEM $CAPEM $ORGI)" > config/crypto-config/peerOrganizations/tn.edu.tw/connection-tn.yaml
+echo "$(json_ccp $ORG $P0PORT $CAPORT $PEERPEM $CAPEM $ORGI)" > organizations/tn/connection-tn.json
+echo "$(yaml_ccp $ORG $P0PORT $CAPORT $PEERPEM $CAPEM $ORGI)" > organizations/tn/connection-tn.yaml

@@ -19,9 +19,9 @@ createAnchorPeerUpdate() {
 
   HOST="$PEER.$ORG.edu.tw"
 
-  if [ $ORG == "tn" ] && [ $PEER == "anchorpeer" ]; then
+  if [ $ORG == "tn" ] && [ $PEER == "endorser" ]; then
     PORT=7051
-  elif [ $ORG == "tc" ] && [ $PEER == "anchorpeer" ]; then
+  elif [ $ORG == "tc" ] && [ $PEER == "endorser" ]; then
     PORT=9051
   else
     errorln "$ORG unknown"

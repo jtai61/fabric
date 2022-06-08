@@ -80,7 +80,7 @@ tls:
 #############################################################################
 ca:
   # Name of this CA
-  name: TcCA
+  name: TnCA
   # Key file (is only used to import a private key into BCCSP)
   keyfile:
   # Certificate file (default: ca-cert.pem)
@@ -301,16 +301,16 @@ signing:
 #     CA certificates though it can still issue end entity certificates.
 ###########################################################################
 csr:
-   cn: ca.tc.edu.tw
+   cn: ca.tn.edu.tw
    names:
       - C: UK
         ST: "Hampshire"
         L: "Hursley"
-        O: tc.edu.tw
+        O: tn.edu.tw
         OU:
    hosts:
      - localhost
-     - tc.edu.tw
+     - tn.edu.tw
    ca:
       expiry: 131400h
       pathlength: 1

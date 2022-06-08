@@ -15,7 +15,7 @@ CLI_DELAY=3
 # channel name
 CHANNEL_NAME="channel"
 # chaincode name defaults to "NA"
-CC_NAME="NA"
+CC_NAME="chaincode"
 # chaincode path
 CC_SRC_PATH="chaincode/"
 # endorsement policy defaults to "NA". This would allow chaincodes to use the majority default policy.
@@ -31,13 +31,6 @@ CC_VERSION="1.0"
 # Chaincode definition sequence
 CC_SEQUENCE=1
 
-
-# clean out any old identites in the wallets
-# rm -rf apiserver/wallet/*
-
-# pull fabric docker image
-# ./requirements.sh
-
 export PATH=${PWD}/bin:$PATH
 export FABRIC_CFG_PATH=${PWD}/config
 export VERBOSE=false
@@ -51,7 +44,7 @@ function createOrgCrypto() {
 
   if [ $ORGANIZATION_NAME == "tn" ]; then
 
-    docker-compose -f docker/tn/docker-compose-ca.yaml up -d
+    docker compose -f docker/tn/docker-compose-ca.yaml up -d
 
     . organizations/tn/registerEnroll.sh
 
@@ -72,7 +65,7 @@ function createOrgCrypto() {
 
   elif [ $ORGANIZATION_NAME == "tc" ]; then
 
-    docker-compose -f docker/tc/docker-compose-ca.yaml up -d
+    docker compose -f docker/tc/docker-compose-ca.yaml up -d
 
     . organizations/tc/registerEnroll.sh
 
@@ -93,7 +86,7 @@ function createOrgCrypto() {
 
   elif [ $ORGANIZATION_NAME == "orderer" ]; then
 
-    docker-compose -f docker/orderer/docker-compose-ca.yaml up -d
+    docker compose -f docker/orderer/docker-compose-ca.yaml up -d
 
     . organizations/orderer/registerEnroll.sh
 
@@ -134,34 +127,18 @@ function createGenesisBlock() {
 
 # Bring up the peer using docker compose
 function networkUp() {
-  
-  createOrgCrypto
-
-  if [ $ORGANIZATION_NAME == "orderer" ]; then
-
-    infoln "Copy crypto file to orderer org"
-    sudo scp -r cils@192.168.1.10:/home/cils/fabricPRJ/config/ .
-    sudo scp -r cils@192.168.1.20:/home/cils/fabricPRJ/config/ .
-    
-    createGenesisBlock
-
-    infoln "Copy genesis.block file to TnOrg and TcOrg"
-    sudo scp config/network-config/genesis.block cils@192.168.1.10:/home/cils/fabricPRJ/config/network-config/genesis.block
-    sudo scp config/network-config/genesis.block cils@192.168.1.20:/home/cils/fabricPRJ/config/network-config/genesis.block
-    
-  fi
 
   if [ $ORGANIZATION_NAME == "tn" ]; then
 
-    docker-compose -f docker/tn/docker-compose-base.yaml -f docker/tn/docker-compose-couch.yaml up -d
+    docker compose -f docker/tn/docker-compose-base.yaml -f docker/tn/docker-compose-couch.yaml up -d
 
   elif [ $ORGANIZATION_NAME == "tc" ]; then
 
-    docker-compose -f docker/tc/docker-compose-base.yaml -f docker/tc/docker-compose-couch.yaml up -d
+    docker compose -f docker/tc/docker-compose-base.yaml -f docker/tc/docker-compose-couch.yaml up -d
 
   elif [ $ORGANIZATION_NAME == "orderer" ]; then
 
-    docker-compose -f docker/orderer/docker-compose-base.yaml up -d
+    docker compose -f docker/orderer/docker-compose-base.yaml up -d
 
   fi
 

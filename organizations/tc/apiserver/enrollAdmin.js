@@ -14,11 +14,11 @@ const path = require('path');
 async function main() {
     try {
         // load the network configuration
-        const ccpPath = path.resolve(__dirname, '..', 'bidding-network', 'organizations', 'peerOrganizations', 'tn.edu.tw', 'connection-tn.json');
+        const ccpPath = path.resolve(__dirname, '..', 'connection-tc.json');
         const ccp = JSON.parse(fs.readFileSync(ccpPath, 'utf8'));
 
         // Create a new CA client for interacting with the CA.
-        const caInfo = ccp.certificateAuthorities['ca.tn.edu.tw'];
+        const caInfo = ccp.certificateAuthorities['ca.tc.edu.tw'];
         const caTLSCACerts = caInfo.tlsCACerts.pem;
         const ca = new FabricCAServices(caInfo.url, { trustedRoots: caTLSCACerts, verify: false }, caInfo.caName);
 
@@ -41,14 +41,14 @@ async function main() {
                 certificate: enrollment.certificate,
                 privateKey: enrollment.key.toBytes(),
             },
-            mspId: 'TnMSP',
+            mspId: 'TcMSP',
             type: 'X.509',
         };
-        await wallet.put('tnadmin', x509Identity);
-        console.log('Successfully enrolled admin user "tnadmin" and imported it into the wallet');
+        await wallet.put('tcadmin', x509Identity);
+        console.log('Successfully enrolled admin user "tcadmin" and imported it into the wallet');
 
     } catch (error) {
-        console.error(`Failed to enroll admin user "tnadmin": ${error}`);
+        console.error(`Failed to enroll admin user "tcadmin": ${error}`);
         process.exit(1);
     }
 }

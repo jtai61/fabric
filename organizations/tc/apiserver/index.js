@@ -13,7 +13,7 @@ const path = require('path');
 app.post('/api/InitialLedger', async function (req, res) {
     try {
         // load the network configuration
-        const ccpPath = path.resolve(__dirname, '..', 'bidding-network', 'organizations', 'peerOrganizations', 'tn.edu.tw', 'connection-tn.json');
+        const ccpPath = path.resolve(__dirname, '..', 'connection-tc.json');
         let ccp = JSON.parse(fs.readFileSync(ccpPath, 'utf8'));
 
         // Create a new file system based wallet for managing identities.
@@ -61,7 +61,7 @@ app.post('/api/InitialLedger', async function (req, res) {
 app.post('/api/tn/SubmitBiddingInfo', async function (req, res) {
     try {
         // load the network configuration
-        const ccpPath = path.resolve(__dirname, '..', 'bidding-network', 'organizations', 'peerOrganizations', 'tn.edu.tw', 'connection-tn.json');
+        const ccpPath = path.resolve(__dirname, '..', 'connection-tc.json');
         let ccp = JSON.parse(fs.readFileSync(ccpPath, 'utf8'));
 
         // Create a new file system based wallet for managing identities.
@@ -125,7 +125,7 @@ app.post('/api/tn/SubmitBiddingInfo', async function (req, res) {
 app.get('/api/tn/GetBiddingInfo', async function (req, res) {
     try {
         // load the network configuration
-        const ccpPath = path.resolve(__dirname, '..', 'bidding-network', 'organizations', 'peerOrganizations', 'tn.edu.tw', 'connection-tn.json');
+        const ccpPath = path.resolve(__dirname, '..', 'connection-tc.json');
         const ccp = JSON.parse(fs.readFileSync(ccpPath, 'utf8'));
 
         // Create a new file system based wallet for managing identities.
@@ -197,7 +197,7 @@ app.get('/api/tn/GetBiddingInfo', async function (req, res) {
 app.post('/api/tn/SubmitAwardInfo', async function (req, res) {
     try {
         // load the network configuration
-        const ccpPath = path.resolve(__dirname, '..', 'bidding-network', 'organizations', 'peerOrganizations', 'tn.edu.tw', 'connection-tn.json');
+        const ccpPath = path.resolve(__dirname, '..', 'connection-tc.json');
         let ccp = JSON.parse(fs.readFileSync(ccpPath, 'utf8'));
 
         // Create a new file system based wallet for managing identities.
@@ -261,7 +261,7 @@ app.post('/api/tn/SubmitAwardInfo', async function (req, res) {
 app.get('/api/tn/GetAwardInfo', async function (req, res) {
     try {
         // load the network configuration
-        const ccpPath = path.resolve(__dirname, '..', 'bidding-network', 'organizations', 'peerOrganizations', 'tn.edu.tw', 'connection-tn.json');
+        const ccpPath = path.resolve(__dirname, '..', 'connection-tc.json');
         const ccp = JSON.parse(fs.readFileSync(ccpPath, 'utf8'));
 
         // Create a new file system based wallet for managing identities.
