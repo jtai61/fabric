@@ -65,18 +65,18 @@ setAnchorPeer() {
 
 FABRIC_CFG_PATH=${PWD}/config
 
-## Create channeltx
+# Create channeltx
 infoln "Generating channel create transaction '${CHANNEL_NAME}.tx'"
 createChannelTx
 
 BLOCKFILE="./config/network-config/${CHANNEL_NAME}.block"
 
-## Create channel
+# Create channel
 infoln "Creating channel ${CHANNEL_NAME}"
 createChannel
 successln "Channel '$CHANNEL_NAME' created"
 
-## Join all the peers to the channel
+# Join all the peers to the channel
 infoln "Joining TnOrg peer to the channel..."
 joinChannel "tn" "endorser"
 joinChannel "tn" "peer0"
@@ -87,7 +87,7 @@ joinChannel "tc" "peer0"
 joinChannel "tc" "peer1"
 
 
-## Set the anchor peers for each org in the channel
+# Set the anchor peers for each org in the channel
 infoln "Setting anchor peer for TnOrg..."
 setAnchorPeer "tn" "endorser"
 infoln "Setting anchor peer for TcOrg..."

@@ -42,63 +42,24 @@ function createOrgCrypto() {
 
   infoln "Generating certificates using Fabric CA"
 
-  if [ $ORGANIZATION_NAME == "tn" ]; then
+  docker compose -f docker/${ORGANIZATION_NAME}/docker-compose-ca.yaml up -d
 
-    docker compose -f docker/tn/docker-compose-ca.yaml up -d
+  . organizations/${ORGANIZATION_NAME}/registerEnroll.sh
 
-    . organizations/tn/registerEnroll.sh
+  if [ $ORGANIZATION_NAME != "orderer" ]; then
+  
+    if [ $ORGANIZATION_NAME == "tn" ]; then
+      infoln "Creating TnOrg Identities"
+      create_TnOrg
+    elif [ $ORGANIZATION_NAME == "tc" ]; then
+      infoln "Creating TcOrg Identities"
+      create_TcOrg
+    fi
 
-    while :
-    do
-      if [ ! -f "config/ca-config/tn/tls-cert.pem" ]; then
-        sleep 1
-      else
-        break
-      fi
-    done
+    infoln "Generating CCP files"
+    . organizations/${ORGANIZATION_NAME}/ccp-generate.sh
 
-    infoln "Creating TnOrg Identities"
-    create_TnOrg
-
-    infoln "Generating CCP files for TnOrg"
-    . organizations/tn/ccp-generate.sh
-
-  elif [ $ORGANIZATION_NAME == "tc" ]; then
-
-    docker compose -f docker/tc/docker-compose-ca.yaml up -d
-
-    . organizations/tc/registerEnroll.sh
-
-    while :
-    do
-      if [ ! -f "config/ca-config/tc/tls-cert.pem" ]; then
-        sleep 1
-      else
-        break
-      fi
-    done
-
-    infoln "Creating TcOrg Identities"
-    create_TcOrg
-
-    infoln "Generating CCP files for TcOrg"
-    . organizations/tc/ccp-generate.sh
-
-  elif [ $ORGANIZATION_NAME == "orderer" ]; then
-
-    docker compose -f docker/orderer/docker-compose-ca.yaml up -d
-
-    . organizations/orderer/registerEnroll.sh
-
-    while :
-    do
-      if [ ! -f "config/ca-config/orderer/tls-cert.pem" ]; then
-        sleep 1
-      else
-        break
-      fi
-    done
-
+  else
     infoln "Creating OrdererOrg Identities"
     create_OrdererOrg
 
@@ -128,18 +89,10 @@ function createGenesisBlock() {
 # Bring up the peer using docker compose
 function networkUp() {
 
-  if [ $ORGANIZATION_NAME == "tn" ]; then
-
-    docker compose -f docker/tn/docker-compose-base.yaml -f docker/tn/docker-compose-couch.yaml up -d
-
-  elif [ $ORGANIZATION_NAME == "tc" ]; then
-
-    docker compose -f docker/tc/docker-compose-base.yaml -f docker/tc/docker-compose-couch.yaml up -d
-
-  elif [ $ORGANIZATION_NAME == "orderer" ]; then
-
-    docker compose -f docker/orderer/docker-compose-base.yaml up -d
-
+  if [ $ORGANIZATION_NAME != "orderer" ]; then
+    docker compose -f docker/${ORGANIZATION_NAME}/docker-compose-base.yaml -f docker/${ORGANIZATION_NAME}/docker-compose-couch.yaml up -d
+  else
+    docker compose -f docker/${ORGANIZATION_NAME}/docker-compose-base.yaml up -d
   fi
 
   docker container ls --all
@@ -160,6 +113,15 @@ function createChannel() {
   # configtx.yaml is mounted in the cli container, which allows us to use it to
   # create the channel artifacts
   scripts/createChannel.sh $CHANNEL_NAME $CLI_DELAY $MAX_RETRY $VERBOSE
+}
+
+# Call the script to deploy a chaincode to the channel
+function deployCC() {
+  scripts/deployCC.sh $CHANNEL_NAME $CC_NAME $CC_SRC_PATH $CC_SRC_LANGUAGE $CC_VERSION $CC_SEQUENCE $CC_INIT_FCN $CC_END_POLICY $CC_COLL_CONFIG $CLI_DELAY $MAX_RETRY $VERBOSE
+
+  if [ $? -ne 0 ]; then
+    fatalln "Deploying chaincode failed"
+  fi
 }
 
 
@@ -246,14 +208,6 @@ done
 
 networkUp
 
-
-
-# # launch network; create channel and join peer to channel
-# pushd ./bidding-network
-# ./network.sh down
-# ./network.sh up createChannel -ca -s couchdb
-# ./network.sh deployCC -ccn bidding -ccv 1 -cci initLedger -ccl ${CC_SRC_LANGUAGE} -ccp ${CC_SRC_PATH}
-# popd
 
 # # run fabric api server
 # pushd ./apiserver

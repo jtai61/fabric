@@ -1,2 +1,9 @@
-# apiserver
-apiserver/node_modules
+# organizations folder
+organizations/tn/apiserver/node_modules
+organizations/tc/apiserver/node_modules
+organizations/tn/apiserver/wallet/*
+organizations/tc/apiserver/wallet/*
+
+
+log.txt
+*.tar.gz
